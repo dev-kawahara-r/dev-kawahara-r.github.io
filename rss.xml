@@ -6,9 +6,17 @@
         <link>https://dev-kawahara-r.github.io/</link>
         <atom:link href="https://dev-kawahara-r.github.io/rss.xml" rel="self" type="application/rss+xml" />
         <language>ja</language>
-        <lastBuildDate>Tue, 07 Jan 2025 10:00:00 +0900</lastBuildDate>
-        <pubDate>Tue, 07 Jan 2025 10:00:00 +0900</pubDate>
+        <lastBuildDate>Tue, 07 Jan 2025 15:00:00 +0900</lastBuildDate>
+        <pubDate>Tue, 07 Jan 2025 15:00:00 +0900</pubDate>
         <ttl>1440</ttl>
+        
+        <item>
+            <title>プロジェクト別Claude Code Actions設定例集</title>
+            <description>React、Vue、Node.js、Python、Go等の技術スタック別にClaude Code Actionsの実践的な設定例を紹介。各フレームワークに最適化されたワークフロー、テスト、ビルド、デプロイの自動化設定を詳しく解説します。</description>
+            <link>https://dev-kawahara-r.github.io/posts/project-specific-examples.html</link>
+            <guid>https://dev-kawahara-r.github.io/posts/project-specific-examples.html</guid>
+            <pubDate>Tue, 07 Jan 2025 15:00:00 +0900</pubDate>
+        </item>
         
         <item>
             <title>Claude Code Actions よくあるエラーと解決法</title>

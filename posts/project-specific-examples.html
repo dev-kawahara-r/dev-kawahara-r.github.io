@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>プロジェクト別Claude Code Actions設定例集 - Claude Code Actions Blog</title>
+    <meta name="description" content="React、Vue、Node.js、Python、Go等の技術スタック別にClaude Code Actionsの実践的な設定例を紹介。各フレームワークに最適化されたワークフロー、テスト、ビルド、デプロイの自動化設定を詳しく解説します。">
+    <meta name="keywords" content="Claude Code, Actions, React, Vue, Node.js, Python, Go, Django, FastAPI, プロジェクト設定, 技術スタック">
+    <link rel="canonical" href="https://dev-kawahara-r.github.io/posts/project-specific-examples.html">
+    <meta property="og:title" content="プロジェクト別Claude Code Actions設定例集">
+    <meta property="og:description" content="React、Vue、Node.js、Python、Go等の技術スタック別にClaude Code Actionsの実践的な設定例を紹介。">
+    <meta property="og:url" content="https://dev-kawahara-r.github.io/posts/project-specific-examples.html">
+    <meta property="og:type" content="article">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../post.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1><a href="../index.html">Claude Code Actions Blog</a></h1>
+            <p>Claude Codeのアクション機能について詳しく解説</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <article class="blog-post">
+            <header class="post-header">
+                <h1>プロジェクト別Claude Code Actions設定例集</h1>
+                <p class="post-meta">2025年1月7日</p>
+            </header>
+
+            <div class="post-content">
+                <p>技術スタックやフレームワークによって、最適なClaude Code Actionsの設定は異なります。本記事では、主要なプロジェクト種別ごとに実践的な設定例をご紹介します。</p>
+
+                <h2>⚛️ React プロジェクト</h2>
+
+                <h3>基本設定（Create React App）</h3>
+                <pre><code>{
+  "name": "react-workflow",
+  "description": "React開発ワークフロー",
+  "actions": [
+    {
+      "name": "dev-setup",
+      "description": "開発環境セットアップ",
+      "steps": [
+        {
+          "name": "install",
+          "command": "npm install"
+        },
+        {
+          "name": "env-setup", 
+          "command": "cp .env.example .env.local",
+          "condition": "file_exists:.env.example"
+        }
+      ]
+    },
+    {
+      "name": "quality-check",
+      "description": "コード品質チェック",
+      "parallel": [
+        {
+          "name": "lint",
+          "command": "npm run lint",
+          "fix": "npm run lint:fix"
+        },
+        {
+          "name": "type-check",
+          "command": "npm run type-check"
+        },
+        {
+          "name": "test",
+          "command": "npm run test -- --coverage --watchAll=false"
+        }
+      ]
+    },
+    {
+      "name": "component-generator",
+      "description": "新しいコンポーネント生成",
+      "type": "template",
+      "parameters": {
+        "name": {
+          "type": "string",
+          "prompt": "コンポーネント名（PascalCase）"
+        },
+        "type": {
+          "type": "select",
+          "options": ["functional", "class"],
+          "default": "functional"
+        }
+      },
+      "template": {
+        "src/components/${name}/${name}.tsx": "react-component.template",
+        "src/components/${name}/${name}.test.tsx": "react-test.template",
+        "src/components/${name}/${name}.stories.tsx": "storybook.template",
+        "src/components/${name}/index.ts": "export { default } from './${name}';"
+      }
+    }
+  ]
+}</code></pre>
+
+                <h3>Next.js プロジェクト向け</h3>
+                <pre><code>{
+  "name": "nextjs-workflow",
+  "actions": [
+    {
+      "name": "build-and-export",
+      "description": "ビルドと静的エクスポート",
+      "steps": [
+        {
+          "name": "build",
+          "command": "npm run build"
+        },
+        {
+          "name": "export",
+          "command": "npm run export",
+          "condition": "static_export"
+        },
+        {
+          "name": "optimize-images",
+          "command": "npm run optimize:images",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "name": "lighthouse-audit",
+      "description": "パフォーマンス監査",
+      "command": "lighthouse http://localhost:3000 --output=html --output-path=./reports/lighthouse.html",
+      "requires": ["dev-server"]
+    }
+  ]
+}</code></pre>
+
+                <h2>🟢 Vue.js プロジェクト</h2>
+
+                <h3>Vue 3 + Vite 設定</h3>
+                <pre><code>{
+  "name": "vue3-workflow",
+  "description": "Vue 3 + Vite開発ワークフロー",
+  "actions": [
+    {
+      "name": "dev-workflow",
+      "description": "開発時の自動化",
+      "steps": [
+        {
+          "name": "lint-and-format",
+          "parallel": [
+            {"command": "npm run lint"},
+            {"command": "npm run format"}
+          ]
+        },
+        {
+          "name": "type-check",
+          "command": "vue-tsc --noEmit"
+        },
+        {
+          "name": "unit-test",
+          "command": "npm run test:unit"
+        }
+      ],
+      "trigger": "on-save",
+      "include": ["**/*.vue", "**/*.ts"]
+    },
+    {
+      "name": "build-for-env",
+      "description": "環境別ビルド",
+      "parameters": {
+        "env": {
+          "type": "select",
+          "options": ["development", "staging", "production"],
+          "default": "production"
+        }
+      },
+      "command": "npm run build:${env}",
+      "post_steps": [
+        {
+          "name": "bundle-analysis",
+          "command": "npm run analyze",
+          "condition": "env=production"
+        }
+      ]
+    }
+  ]
+}</code></pre>
+
+                <h2>🟨 Node.js プロジェクト</h2>
+
+                <h3>Express.js API サーバー</h3>
+                <pre><code>{
+  "name": "express-api-workflow",
+  "description": "Express.js API開発ワークフロー",
+  "actions": [
+    {
+      "name": "api-development",
+      "description": "API開発サイクル",
+      "steps": [
+        {
+          "name": "security-audit",
+          "command": "npm audit --audit-level=moderate"
+        },
+        {
+          "name": "lint",
+          "command": "eslint . --fix"
+        },
+        {
+          "name": "test-suite",
+          "parallel": [
+            {
+              "name": "unit-tests",
+              "command": "npm run test:unit"
+            },
+            {
+              "name": "integration-tests", 
+              "command": "npm run test:integration",
+              "env": {"NODE_ENV": "test"}
+            }
+          ]
+        },
+        {
+          "name": "api-docs",
+          "command": "npm run docs:generate",
+          "output": "docs/api/"
+        }
+      ]
+    },
+    {
+      "name": "docker-deployment",
+      "description": "Docker化とデプロイ",
+      "steps": [
+        {
+          "name": "docker-build",
+          "command": "docker build -t ${PROJECT_NAME}:${VERSION} ."
+        },
+        {
+          "name": "docker-test",
+          "command": "docker run --rm ${PROJECT_NAME}:${VERSION} npm test"
+        },
+        {
+          "name": "docker-push",
+          "command": "docker push ${REGISTRY}/${PROJECT_NAME}:${VERSION}",
+          "condition": "branch=main"
+        }
+      ]
+    }
+  ]
+}</code></pre>
+
+                <h2>🐍 Python プロジェクト</h2>
+
+                <h3>Django ウェブアプリケーション</h3>
+                <pre><code>{
+  "name": "django-workflow",
+  "description": "Django開発ワークフロー",
+  "actions": [
+    {
+      "name": "django-setup",
+      "description": "Django環境セットアップ",
+      "steps": [
+        {
+          "name": "virtual-env",
+          "command": "python -m venv venv && source venv/bin/activate"
+        },
+        {
+          "name": "install-deps",
+          "command": "pip install -r requirements.txt"
+        },
+        {
+          "name": "migrate",
+          "command": "python manage.py migrate"
+        },
+        {
+          "name": "collect-static",
+          "command": "python manage.py collectstatic --noinput",
+          "condition": "env!=development"
+        }
+      ]
+    },
+    {
+      "name": "django-quality",
+      "description": "コード品質チェック",
+      "parallel": [
+        {
+          "name": "flake8",
+          "command": "flake8 ."
+        },
+        {
+          "name": "black",
+          "command": "black --check ."
+        },
+        {
+          "name": "isort",
+          "command": "isort --check-only ."
+        },
+        {
+          "name": "mypy",
+          "command": "mypy ."
+        }
+      ]
+    },
+    {
+      "name": "django-test",
+      "description": "テスト実行",
+      "command": "python manage.py test --parallel --keepdb",
+      "coverage": {
+        "command": "coverage run --source='.' manage.py test",
+        "report": "coverage report",
+        "html": "coverage html"
+      }
+    }
+  ]
+}</code></pre>
+
+                <h3>FastAPI プロジェクト</h3>
+                <pre><code>{
+  "name": "fastapi-workflow",
+  "description": "FastAPI開発ワークフロー",
+  "actions": [
+    {
+      "name": "fastapi-dev",
+      "description": "開発環境",
+      "steps": [
+        {
+          "name": "install",
+          "command": "pip install -r requirements.txt"
+        },
+        {
+          "name": "dev-server",
+          "command": "uvicorn main:app --reload --host 0.0.0.0 --port 8000"
+        }
+      ]
+    },
+    {
+      "name": "api-testing",
+      "description": "API テスト",
+      "steps": [
+        {
+          "name": "pytest",
+          "command": "pytest -v --cov=app tests/"
+        },
+        {
+          "name": "api-docs-test",
+          "command": "curl -f http://localhost:8000/docs || exit 1"
+        }
+      ]
+    }
+  ]
+}</code></pre>
+
+                <h2>🔷 Go プロジェクト</h2>
+
+                <h3>Go Web サービス</h3>
+                <pre><code>{
+  "name": "go-web-workflow",
+  "description": "Go Webサービス開発ワークフロー",
+  "actions": [
+    {
+      "name": "go-quality",
+      "description": "Go コード品質チェック",
+      "steps": [
+        {
+          "name": "format",
+          "command": "gofmt -w ."
+        },
+        {
+          "name": "imports",
+          "command": "goimports -w ."
+        },
+        {
+          "name": "vet",
+          "command": "go vet ./..."
+        },
+        {
+          "name": "lint",
+          "command": "golangci-lint run"
+        }
+      ]
+    },
+    {
+      "name": "go-test-and-build",
+      "description": "テストとビルド",
+      "steps": [
+        {
+          "name": "test",
+          "command": "go test -v -race -coverprofile=coverage.out ./..."
+        },
+        {
+          "name": "coverage",
+          "command": "go tool cover -html=coverage.out -o coverage.html"
+        },
+        {
+          "name": "build",
+          "command": "go build -o bin/app ./cmd/app"
+        }
+      ]
+    },
+    {
+      "name": "docker-multi-stage",
+      "description": "マルチステージDockerビルド",
+      "command": "docker build --target production -t ${APP_NAME}:${VERSION} .",
+      "optimizations": {
+        "cache": true,
+        "build_args": ["VERSION=${GIT_SHA}"]
+      }
+    }
+  ]
+}</code></pre>
+
+                <h2>💎 Ruby on Rails プロジェクト</h2>
+
+                <h3>Rails 7 設定</h3>
+                <pre><code>{
+  "name": "rails-workflow",
+  "description": "Ruby on Rails開発ワークフロー",
+  "actions": [
+    {
+      "name": "rails-setup",
+      "description": "Rails環境セットアップ",
+      "steps": [
+        {
+          "name": "bundle-install",
+          "command": "bundle install"
+        },
+        {
+          "name": "yarn-install",
+          "command": "yarn install"
+        },
+        {
+          "name": "db-setup",
+          "command": "rails db:create db:migrate db:seed"
+        }
+      ]
+    },
+    {
+      "name": "rails-quality",
+      "description": "コード品質チェック",
+      "parallel": [
+        {
+          "name": "rubocop",
+          "command": "bundle exec rubocop"
+        },
+        {
+          "name": "rspec",
+          "command": "bundle exec rspec"
+        },
+        {
+          "name": "brakeman",
+          "command": "bundle exec brakeman"
+        }
+      ]
+    }
+  ]
+}</code></pre>
+
+                <h2>📱 React Native プロジェクト</h2>
+
+                <h3>クロスプラットフォーム設定</h3>
+                <pre><code>{
+  "name": "react-native-workflow",
+  "description": "React Native開発ワークフロー",
+  "actions": [
+    {
+      "name": "mobile-setup",
+      "description": "モバイル開発環境セットアップ",
+      "steps": [
+        {
+          "name": "npm-install",
+          "command": "npm install"
+        },
+        {
+          "name": "pod-install",
+          "command": "cd ios && pod install",
+          "platform": "ios"
+        },
+        {
+          "name": "gradle-clean",
+          "command": "cd android && ./gradlew clean",
+          "platform": "android"
+        }
+      ]
+    },
+    {
+      "name": "build-apps",
+      "description": "アプリビルド",
+      "platforms": {
+        "ios": {
+          "command": "npx react-native run-ios",
+          "release": "npx react-native run-ios --configuration Release"
+        },
+        "android": {
+          "command": "npx react-native run-android",
+          "release": "npx react-native run-android --variant=release"
+        }
+      }
+    }
+  ]
+}</code></pre>
+
+                <h2>🚀 統合ワークフロー例</h2>
+
+                <h3>マルチプロジェクト対応</h3>
+                <pre><code>{
+  "name": "universal-workflow",
+  "description": "プロジェクト種別自動判定ワークフロー",
+  "actions": [
+    {
+      "name": "auto-setup",
+      "description": "プロジェクト種別を自動判定してセットアップ",
+      "detection": [
+        {
+          "condition": "file_exists:package.json && contains:react",
+          "action": "react-setup"
+        },
+        {
+          "condition": "file_exists:requirements.txt && file_exists:manage.py",
+          "action": "django-setup"
+        },
+        {
+          "condition": "file_exists:go.mod",
+          "action": "go-setup"
+        },
+        {
+          "condition": "file_exists:Gemfile && file_exists:config/application.rb",
+          "action": "rails-setup"
+        }
+      ],
+      "fallback": {
+        "action": "generic-setup",
+        "message": "プロジェクト種別を検出できませんでした"
+      }
+    }
+  ]
+}</code></pre>
+
+                <h2>💡 設定のカスタマイズポイント</h2>
+
+                <h3>環境別設定</h3>
+                <ul>
+                    <li><strong>開発環境</strong>: ホットリロード、詳細ログ、デバッグ情報</li>
+                    <li><strong>ステージング</strong>: 本番同等設定、E2Eテスト</li>
+                    <li><strong>本番環境</strong>: 最適化、圧縮、セキュリティチェック</li>
+                </ul>
+
+                <h3>チーム向けカスタマイズ</h3>
+                <ul>
+                    <li>コードスタイルの統一（Prettier、ESLint設定）</li>
+                    <li>コミットメッセージの規約（Conventional Commits）</li>
+                    <li>PR作成時の自動チェック</li>
+                    <li>Slack/Teams通知の設定</li>
+                </ul>
+
+                <h3>CI/CD統合</h3>
+                <ul>
+                    <li>GitHub Actions、GitLab CI/CD連携</li>
+                    <li>Docker化とコンテナレジストリ連携</li>
+                    <li>クラウドプロバイダー（AWS、GCP、Azure）デプロイ</li>
+                </ul>
+
+                <h2>📋 実装手順</h2>
+
+                <ol>
+                    <li><strong>プロジェクト分析</strong>: 使用技術とワークフローの把握</li>
+                    <li><strong>基本設定</strong>: 該当する設定例をベースに実装</li>
+                    <li><strong>カスタマイズ</strong>: プロジェクト固有の要件に合わせて調整</li>
+                    <li><strong>テスト実行</strong>: dry-runモードで動作確認</li>
+                    <li><strong>段階的導入</strong>: 重要度の高いアクションから順次導入</li>
+                </ol>
+
+                <h2>まとめ</h2>
+                <p>各技術スタックに最適化されたClaude Code Actions設定により、開発効率を大幅に向上させることができます。まずは自分のプロジェクトに該当する設定例から始めて、徐々にカスタマイズを進めることをお勧めします。</p>
+
+                <p>次回は、より高度なワークフロー設計とCI/CD統合について詳しく解説予定です。</p>
+            </div>
+        </article>
+
+        <nav class="post-navigation">
+            <a href="common-errors-solutions.html">← 前の記事: エラーと解決法</a>
+            <a href="../index.html">ブログ一覧に戻る →</a>
+        </nav>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Claude Code Actions Blog. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
