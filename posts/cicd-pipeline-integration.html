@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CI/CDパイプラインをClaude Code Actionsで効率化する方法 - Claude Code Actions Blog</title>
+    <meta name="description" content="GitHub Actions、GitLab CI/CD、Jenkins等の主要CI/CDツールとClaude Code Actionsを連携させる実践的な方法を解説。自動テスト、ビルド、デプロイパイプラインの構築から、クラウドプロバイダー統合まで詳しく紹介します。">
+    <meta name="keywords" content="Claude Code, Actions, CI/CD, GitHub Actions, GitLab CI, Jenkins, DevOps, パイプライン, 自動化, デプロイ">
+    <link rel="canonical" href="https://dev-kawahara-r.github.io/posts/cicd-pipeline-integration.html">
+    <meta property="og:title" content="CI/CDパイプラインをClaude Code Actionsで効率化する方法">
+    <meta property="og:description" content="GitHub Actions、GitLab CI/CD、Jenkins等の主要CI/CDツールとClaude Code Actionsを連携させる実践的な方法を解説。">
+    <meta property="og:url" content="https://dev-kawahara-r.github.io/posts/cicd-pipeline-integration.html">
+    <meta property="og:type" content="article">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="../modern-styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1><a href="../index.html">Claude Code Actions Blog</a></h1>
+            <p>Claude Codeのアクション機能について詳しく解説</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <article class="blog-post">
+            <header class="post-header">
+                <h1>CI/CDパイプラインをClaude Code Actionsで効率化する方法</h1>
+                <p class="post-meta">2025年1月8日 • <span class="reading-time">15分で読める</span> • <span class="tag">CI/CD</span> <span class="tag">DevOps</span></p>
+            </header>
+
+            <div class="post-content">
+                <p>現代のソフトウェア開発において、CI/CDパイプラインは不可欠な要素です。Claude Code Actionsを既存のCI/CDツールと組み合わせることで、より柔軟で効率的な開発ワークフローを構築できます。</p>
+
+                <div class="table-of-contents">
+                    <h3>📖 目次</h3>
+                    <ul>
+                        <li><a href="#github-actions">GitHub Actionsとの統合</a></li>
+                        <li><a href="#gitlab-cicd">GitLab CI/CDとの連携</a></li>
+                        <li><a href="#jenkins">Jenkinsとの組み合わせ</a></li>
+                        <li><a href="#cloud-providers">クラウドプロバイダー統合</a></li>
+                        <li><a href="#monitoring">監視とアラート設定</a></li>
+                    </ul>
+                </div>
+
+                <h2 id="github-actions">🔄 GitHub Actionsとの統合</h2>
+
+                <h3>基本的な統合パターン</h3>
+                <pre><code># .github/workflows/claude-actions.yml
+name: Claude Code Actions Integration
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  claude-actions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Claude Code
+        run: |
+          curl -sSL https://install.claude-code.com | sh
+          echo "$HOME/.claude/bin" >> $GITHUB_PATH
+      
+      - name: Run Claude Actions
+        run: |
+          claude-code actions run pre-ci-checks
+          claude-code actions run build-and-test
+        env:
+          CLAUDE_API_KEY: ${{ secrets.CLAUDE_API_KEY }}
+          
+      - name: Deploy on success
+        if: github.ref == 'refs/heads/main'
+        run: claude-code actions run deploy-production</code></pre>
+
+                <h3>高度なパイプライン例</h3>
+                <pre><code>{
+  "name": "github-actions-integration",
+  "description": "GitHub Actionsとの統合パイプライン",
+  "triggers": {
+    "github_webhook": {
+      "events": ["push", "pull_request"],
+      "branches": ["main", "develop", "feature/*"]
+    }
+  },
+  "jobs": {
+    "quality-gates": {
+      "steps": [
+        {
+          "name": "security-scan",
+          "command": "npm audit --audit-level=high",
+          "continue_on_error": false
+        },
+        {
+          "name": "dependency-check",
+          "command": "snyk test",
+          "env": {"SNYK_TOKEN": "${SNYK_TOKEN}"}
+        },
+        {
+          "name": "code-quality",
+          "parallel": [
+            {"command": "npm run lint"},
+            {"command": "npm run type-check"},
+            {"command": "npm run test:coverage"}
+          ]
+        }
+      ]
+    },
+    "build-matrix": {
+      "strategy": {
+        "matrix": {
+          "node": ["18", "20", "22"],
+          "os": ["ubuntu-latest", "windows-latest", "macos-latest"]
+        }
+      },
+      "steps": [
+        {
+          "name": "setup-node",
+          "command": "setup-node-${matrix.node}"
+        },
+        {
+          "name": "build-test",
+          "command": "npm run build && npm test"
+        }
+      ]
+    }
+  }
+}</code></pre>
+
+                <h2 id="gitlab-cicd">🦊 GitLab CI/CDとの連携</h2>
+
+                <h3>GitLab CI設定例</h3>
+                <pre><code># .gitlab-ci.yml
+stages:
+  - prepare
+  - test
+  - build
+  - deploy
+
+variables:
+  CLAUDE_CONFIG_PATH: ".claude/actions.json"
+
+before_script:
+  - apt-get update -qq && apt-get install -y -qq curl
+  - curl -sSL https://install.claude-code.com | sh
+  - export PATH="$HOME/.claude/bin:$PATH"
+
+claude-prepare:
+  stage: prepare
+  script:
+    - claude-code actions validate
+    - claude-code actions run environment-setup
+  artifacts:
+    paths:
+      - .claude/cache/
+    expire_in: 1 hour
+
+claude-test:
+  stage: test
+  script:
+    - claude-code actions run comprehensive-testing
+  coverage: '/Coverage: \d+\.\d+%/'
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage/cobertura-coverage.xml
+
+claude-build:
+  stage: build
+  script:
+    - claude-code actions run production-build
+  artifacts:
+    paths:
+      - dist/
+    expire_in: 1 week
+
+claude-deploy:
+  stage: deploy
+  script:
+    - claude-code actions run deploy-${CI_COMMIT_REF_NAME}
+  only:
+    - main
+    - staging</code></pre>
+
+                <h3>GitLab統合アクション設定</h3>
+                <pre><code>{
+  "name": "gitlab-cicd-integration",
+  "description": "GitLab CI/CDパイプライン統合",
+  "environments": {
+    "gitlab": {
+      "variables": {
+        "CI_PIPELINE_ID": "${CI_PIPELINE_ID}",
+        "CI_COMMIT_SHA": "${CI_COMMIT_SHA}",
+        "CI_MERGE_REQUEST_ID": "${CI_MERGE_REQUEST_IID}"
+      }
+    }
+  },
+  "actions": [
+    {
+      "name": "gitlab-mr-checks",
+      "description": "マージリクエスト時のチェック",
+      "condition": "env.CI_MERGE_REQUEST_ID",
+      "steps": [
+        {
+          "name": "mr-validation",
+          "command": "claude-code validate-mr --mr-id=${CI_MERGE_REQUEST_ID}"
+        },
+        {
+          "name": "conflict-check",
+          "command": "git merge-tree $(git merge-base HEAD main) HEAD main"
+        }
+      ]
+    },
+    {
+      "name": "gitlab-release",
+      "description": "リリース作成",
+      "condition": "env.CI_COMMIT_TAG",
+      "steps": [
+        {
+          "name": "create-release",
+          "command": "glab release create ${CI_COMMIT_TAG} --notes-file CHANGELOG.md"
+        },
+        {
+          "name": "notify-teams",
+          "command": "claude-code notify --template=release --version=${CI_COMMIT_TAG}"
+        }
+      ]
+    }
+  ]
+}</code></pre>
+
+                <h2 id="jenkins">🏗️ Jenkinsとの組み合わせ</h2>
+
+                <h3>Jenkinsfile例</h3>
+                <pre><code>pipeline {
+    agent any
+    
+    environment {
+        CLAUDE_CONFIG = credentials('claude-config')
+        CLAUDE_API_KEY = credentials('claude-api-key')
+    }
+    
+    stages {
+        stage('Setup') {
+            steps {
+                script {
+                    sh '''
+                        curl -sSL https://install.claude-code.com | sh
+                        export PATH="$HOME/.claude/bin:$PATH"
+                        claude-code --version
+                    '''
+                }
+            }
+        }
+        
+        stage('Pre-build Checks') {
+            parallel {
+                stage('Security Scan') {
+                    steps {
+                        sh 'claude-code actions run security-audit'
+                    }
+                }
+                stage('Code Quality') {
+                    steps {
+                        sh 'claude-code actions run code-quality-check'
+                    }
+                }
+                stage('Dependency Analysis') {
+                    steps {
+                        sh 'claude-code actions run dependency-scan'
+                    }
+                }
+            }
+        }
+        
+        stage('Build & Test') {
+            steps {
+                sh '''
+                    claude-code actions run build-application
+                    claude-code actions run run-test-suite
+                '''
+            }
+            post {
+                always {
+                    publishTestResults testResultsPattern: 'test-results/**/*.xml'
+                    publishCoverage adapters: [
+                        istanbulCoberturaAdapter('coverage/cobertura-coverage.xml')
+                    ]
+                }
+            }
+        }
+        
+        stage('Deploy') {
+            when {
+                anyOf {
+                    branch 'main'
+                    branch 'staging'
+                }
+            }
+            steps {
+                script {
+                    def environment = env.BRANCH_NAME == 'main' ? 'production' : 'staging'
+                    sh "claude-code actions run deploy-${environment}"
+                }
+            }
+        }
+    }
+    
+    post {
+        success {
+            sh 'claude-code actions run notify-success'
+        }
+        failure {
+            sh 'claude-code actions run notify-failure'
+        }
+        cleanup {
+            sh 'claude-code actions run cleanup-workspace'
+        }
+    }
+}</code></pre>
+
+                <h2 id="cloud-providers">☁️ クラウドプロバイダー統合</h2>
+
+                <h3>AWS統合</h3>
+                <pre><code>{
+  "name": "aws-deployment",
+  "description": "AWS統合デプロイメント",
+  "cloud_config": {
+    "provider": "aws",
+    "region": "${AWS_REGION}",
+    "credentials": {
+      "access_key_id": "${AWS_ACCESS_KEY_ID}",
+      "secret_access_key": "${AWS_SECRET_ACCESS_KEY}"
+    }
+  },
+  "actions": [
+    {
+      "name": "aws-lambda-deploy",
+      "description": "Lambda関数のデプロイ",
+      "steps": [
+        {
+          "name": "build-lambda",
+          "command": "npm run build:lambda"
+        },
+        {
+          "name": "package-lambda",
+          "command": "zip -r function.zip dist/ node_modules/"
+        },
+        {
+          "name": "deploy-lambda",
+          "command": "aws lambda update-function-code --function-name ${FUNCTION_NAME} --zip-file fileb://function.zip"
+        },
+        {
+          "name": "update-alias",
+          "command": "aws lambda update-alias --function-name ${FUNCTION_NAME} --name LIVE --function-version $LATEST"
+        }
+      ]
+    },
+    {
+      "name": "aws-ecs-deploy",
+      "description": "ECSサービスのデプロイ",
+      "steps": [
+        {
+          "name": "build-docker",
+          "command": "docker build -t ${ECR_REPOSITORY}:${BUILD_NUMBER} ."
+        },
+        {
+          "name": "push-to-ecr",
+          "command": "docker push ${ECR_REPOSITORY}:${BUILD_NUMBER}"
+        },
+        {
+          "name": "update-task-definition",
+          "command": "aws ecs register-task-definition --cli-input-json file://task-definition.json"
+        },
+        {
+          "name": "update-service",
+          "command": "aws ecs update-service --cluster ${CLUSTER_NAME} --service ${SERVICE_NAME} --task-definition ${TASK_DEFINITION}"
+        }
+      ]
+    }
+  ]
+}</code></pre>
+
+                <h3>Google Cloud Platform統合</h3>
+                <pre><code>{
+  "name": "gcp-deployment",
+  "description": "GCP統合デプロイメント",
+  "cloud_config": {
+    "provider": "gcp",
+    "project_id": "${GCP_PROJECT_ID}",
+    "credentials_file": "${GOOGLE_APPLICATION_CREDENTIALS}"
+  },
+  "actions": [
+    {
+      "name": "gcp-cloud-run-deploy",
+      "description": "Cloud Runへのデプロイ",
+      "steps": [
+        {
+          "name": "authenticate",
+          "command": "gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}"
+        },
+        {
+          "name": "build-container",
+          "command": "gcloud builds submit --tag gcr.io/${GCP_PROJECT_ID}/${SERVICE_NAME}:${BUILD_NUMBER}"
+        },
+        {
+          "name": "deploy-cloud-run",
+          "command": "gcloud run deploy ${SERVICE_NAME} --image gcr.io/${GCP_PROJECT_ID}/${SERVICE_NAME}:${BUILD_NUMBER} --platform managed --region ${GCP_REGION}"
+        }
+      ]
+    }
+  ]
+}</code></pre>
+
+                <h2 id="monitoring">📊 監視とアラート設定</h2>
+
+                <h3>パイプライン監視</h3>
+                <pre><code>{
+  "name": "pipeline-monitoring",
+  "description": "CI/CDパイプライン監視",
+  "monitoring": {
+    "metrics": [
+      {
+        "name": "pipeline_duration",
+        "type": "histogram",
+        "labels": ["stage", "environment", "status"]
+      },
+      {
+        "name": "deployment_frequency",
+        "type": "counter",
+        "labels": ["environment", "service"]
+      },
+      {
+        "name": "failure_rate",
+        "type": "gauge",
+        "labels": ["stage", "environment"]
+      }
+    ],
+    "alerts": [
+      {
+        "name": "pipeline_failure",
+        "condition": "failure_rate > 0.1",
+        "channels": ["slack", "email"],
+        "severity": "high"
+      },
+      {
+        "name": "deployment_delay",
+        "condition": "pipeline_duration > 30m",
+        "channels": ["slack"],
+        "severity": "medium"
+      }
+    ]
+  },
+  "actions": [
+    {
+      "name": "collect-metrics",
+      "description": "メトリクス収集",
+      "trigger": "post_pipeline",
+      "command": "claude-code metrics collect --pipeline-id=${PIPELINE_ID}"
+    },
+    {
+      "name": "health-check",
+      "description": "デプロイ後ヘルスチェック",
+      "steps": [
+        {
+          "name": "endpoint-check",
+          "command": "curl -f ${HEALTH_CHECK_URL}/health"
+        },
+        {
+          "name": "smoke-tests",
+          "command": "npm run test:smoke"
+        }
+      ],
+      "retry": {
+        "attempts": 3,
+        "delay": 30000
+      }
+    }
+  ]
+}</code></pre>
+
+                <h3>通知システムの設定</h3>
+                <pre><code>{
+  "name": "notification-system",
+  "description": "CI/CD通知システム",
+  "notifications": {
+    "slack": {
+      "webhook_url": "${SLACK_WEBHOOK_URL}",
+      "channels": {
+        "success": "#deployments",
+        "failure": "#alerts",
+        "general": "#dev-team"
+      },
+      "templates": {
+        "deployment_success": {
+          "color": "good",
+          "title": "✅ デプロイ成功",
+          "fields": [
+            {"title": "環境", "value": "${ENVIRONMENT}", "short": true},
+            {"title": "バージョン", "value": "${VERSION}", "short": true},
+            {"title": "実行時間", "value": "${DURATION}", "short": true}
+          ]
+        },
+        "deployment_failure": {
+          "color": "danger",
+          "title": "❌ デプロイ失敗",
+          "fields": [
+            {"title": "環境", "value": "${ENVIRONMENT}", "short": true},
+            {"title": "エラー", "value": "${ERROR_MESSAGE}", "short": false}
+          ]
+        }
+      }
+    },
+    "email": {
+      "smtp_server": "${SMTP_SERVER}",
+      "recipients": {
+        "success": ["dev-team@company.com"],
+        "failure": ["dev-team@company.com", "ops-team@company.com"]
+      }
+    }
+  }
+}</code></pre>
+
+                <h2>🚀 ベストプラクティス</h2>
+
+                <div class="best-practices">
+                    <h3>パイプライン設計の原則</h3>
+                    <ul>
+                        <li><strong>段階的実行</strong>: 軽いチェックから重い処理へと段階的に実行</li>
+                        <li><strong>並列実行</strong>: 独立したタスクは並列で実行して時間短縮</li>
+                        <li><strong>早期失敗</strong>: 問題を早期に検出して無駄な処理を避ける</li>
+                        <li><strong>冪等性</strong>: 同じ操作を何度実行しても同じ結果になる設計</li>
+                    </ul>
+
+                    <h3>セキュリティ考慮事項</h3>
+                    <ul>
+                        <li>機密情報をシークレット管理システムで保護</li>
+                        <li>最小権限の原則でアクセス制御</li>
+                        <li>監査ログの記録と定期的な確認</li>
+                        <li>依存関係の脆弱性スキャン</li>
+                    </ul>
+                </div>
+
+                <h2>📈 パフォーマンス最適化</h2>
+
+                <h3>実行時間短縮のテクニック</h3>
+                <pre><code>{
+  "name": "optimized-pipeline",
+  "optimizations": {
+    "caching": {
+      "node_modules": {
+        "key": "npm-${package-lock.json.hash}",
+        "paths": ["node_modules/"]
+      },
+      "build_artifacts": {
+        "key": "build-${src.hash}",
+        "paths": ["dist/", ".next/"]
+      }
+    },
+    "parallel_execution": {
+      "max_concurrent": 4,
+      "smart_scheduling": true
+    },
+    "resource_optimization": {
+      "memory_limit": "2GB",
+      "cpu_limit": "2",
+      "timeout": "30m"
+    }
+  }
+}</code></pre>
+
+                <h2>まとめ</h2>
+                <p>Claude Code ActionsをCI/CDパイプラインに統合することで、より柔軟で効率的な開発ワークフローを構築できます。各ツールの特性を理解し、プロジェクトの要件に応じて最適な統合方法を選択することが重要です。</p>
+
+                <p>継続的な改善を心がけ、メトリクスを基にパイプラインを最適化していくことで、開発チームの生産性を大幅に向上させることができるでしょう。</p>
+            </div>
+        </article>
+
+        <nav class="post-navigation">
+            <a href="project-specific-examples.html">← 前の記事: プロジェクト別設定例集</a>
+            <a href="../index.html">ブログ一覧に戻る →</a>
+        </nav>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Claude Code Actions Blog. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="../app.js"></script>
+</body>
+</html>

@@ -31,7 +31,13 @@
     <!-- RSS Feed -->
     <link rel="alternate" type="application/rss+xml" title="Claude Code Actions Blog RSS" href="/rss.xml">
     
-    <link rel="stylesheet" href="styles.css">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="modern-styles.css">
 </head>
 <body>
     <header>
@@ -41,42 +47,81 @@
         </div>
     </header>
 
+    <!-- Navigation -->
+    <nav class="nav-container">
+        <div class="container">
+            <div class="nav">
+                <div class="search-container">
+                    <input type="text" class="search-input" placeholder="記事を検索... (Ctrl+K)" aria-label="記事を検索">
+                </div>
+                <div style="display: flex; align-items: center; gap: var(--space-4);">
+                    <ul class="nav-links">
+                        <li><a href="#latest">最新記事</a></li>
+                        <li><a href="/rss.xml">RSS</a></li>
+                        <li><a href="https://github.com/dev-kawahara-r/dev-kawahara-r.github.io">GitHub</a></li>
+                    </ul>
+                    <button class="theme-toggle" aria-label="ダークモードに切り替え">🌙</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
     <main class="container">
-        <section class="blog-posts">
-            <article class="post-preview">
-                <h2><a href="posts/project-specific-examples.html">プロジェクト別Claude Code Actions設定例集</a></h2>
-                <p class="post-meta">2025年1月7日</p>
-                <p class="post-excerpt">React、Vue、Node.js、Python、Go等の技術スタック別にClaude Code Actionsの実践的な設定例を紹介。各フレームワークに最適化されたワークフローを詳しく解説します。</p>
+        <section class="blog-posts" id="latest">
+            <article class="post-preview card">
+                <div class="card-content">
+                    <h2><a href="posts/cicd-pipeline-integration.html">CI/CDパイプラインをClaude Code Actionsで効率化する方法</a></h2>
+                    <p class="post-meta">2025年1月8日 • <span class="reading-time">15分で読める</span> • <span class="tag tag-cicd">CI/CD</span> <span class="tag tag-devops">DevOps</span></p>
+                    <p class="post-excerpt">GitHub Actions、GitLab CI/CD、Jenkins等の主要CI/CDツールとClaude Code Actionsを連携させる実践的な方法を解説。自動テスト、ビルド、デプロイパイプラインの構築から、クラウドプロバイダー統合まで詳しく紹介します。</p>
+                </div>
             </article>
 
-            <article class="post-preview">
-                <h2><a href="posts/common-errors-solutions.html">Claude Code Actions よくあるエラーと解決法</a></h2>
-                <p class="post-meta">2025年1月7日</p>
-                <p class="post-excerpt">Claude Code Actionsでよく発生するエラーの原因と解決方法を詳しく解説。実際のエラーメッセージと具体的な対処法を提供します。</p>
+            <article class="post-preview card">
+                <div class="card-content">
+                    <h2><a href="posts/project-specific-examples.html">プロジェクト別Claude Code Actions設定例集</a></h2>
+                    <p class="post-meta">2025年1月7日 • <span class="reading-time">12分で読める</span> • <span class="tag">設定例</span> <span class="tag">技術スタック</span></p>
+                    <p class="post-excerpt">React、Vue、Node.js、Python、Go等の技術スタック別にClaude Code Actionsの実践的な設定例を紹介。各フレームワークに最適化されたワークフローを詳しく解説します。</p>
+                </div>
             </article>
 
-            <article class="post-preview">
-                <h2><a href="posts/daily-automation-tasks.html">Claude Code Actionsで自動化できる日常業務10選</a></h2>
-                <p class="post-meta">2025年1月6日</p>
-                <p class="post-excerpt">開発者の日常業務をClaude Code Actionsで効率化！コード生成からデプロイまで、すぐに実践できる自動化レシピを10個紹介します。</p>
+            <article class="post-preview card">
+                <div class="card-content">
+                    <h2><a href="posts/common-errors-solutions.html">Claude Code Actions よくあるエラーと解決法</a></h2>
+                    <p class="post-meta">2025年1月7日 • <span class="reading-time">10分で読める</span> • <span class="tag">エラー</span> <span class="tag">トラブルシューティング</span></p>
+                    <p class="post-excerpt">Claude Code Actionsでよく発生するエラーの原因と解決方法を詳しく解説。実際のエラーメッセージと具体的な対処法を提供します。</p>
+                </div>
             </article>
 
-            <article class="post-preview">
-                <h2><a href="posts/introduction-to-claude-code-actions.html">Claude Code Actionsとは？基本的な使い方を解説</a></h2>
-                <p class="post-meta">2025年1月6日</p>
-                <p class="post-excerpt">Claude Codeの新機能「Actions」について、基本的な概念から実際の使用方法まで詳しく解説します。</p>
+            <article class="post-preview card">
+                <div class="card-content">
+                    <h2><a href="posts/daily-automation-tasks.html">Claude Code Actionsで自動化できる日常業務10選</a></h2>
+                    <p class="post-meta">2025年1月6日 • <span class="reading-time">8分で読める</span> • <span class="tag">自動化</span> <span class="tag">実用例</span></p>
+                    <p class="post-excerpt">開発者の日常業務をClaude Code Actionsで効率化！コード生成からデプロイまで、すぐに実践できる自動化レシピを10個紹介します。</p>
+                </div>
             </article>
 
-            <article class="post-preview">
-                <h2><a href="posts/custom-actions-development.html">カスタムアクションの開発方法</a></h2>
-                <p class="post-meta">2025年1月5日</p>
-                <p class="post-excerpt">独自のClaude Code Actionsを作成する方法について、実例を交えながら説明します。</p>
+            <article class="post-preview card">
+                <div class="card-content">
+                    <h2><a href="posts/introduction-to-claude-code-actions.html">Claude Code Actionsとは？基本的な使い方を解説</a></h2>
+                    <p class="post-meta">2025年1月6日 • <span class="reading-time">7分で読める</span> • <span class="tag tag-beginner">基本</span> <span class="tag">入門</span></p>
+                    <p class="post-excerpt">Claude Codeの新機能「Actions」について、基本的な概念から実際の使用方法まで詳しく解説します。</p>
+                </div>
             </article>
 
-            <article class="post-preview">
-                <h2><a href="posts/actions-best-practices.html">Claude Code Actions活用のベストプラクティス</a></h2>
-                <p class="post-meta">2025年1月4日</p>
-                <p class="post-excerpt">効率的なワークフローを構築するためのClaude Code Actionsの活用法をご紹介します。</p>
+            <article class="post-preview card">
+                <div class="card-content">
+                    <h2><a href="posts/custom-actions-development.html">カスタムアクションの開発方法</a></h2>
+                    <p class="post-meta">2025年1月5日 • <span class="reading-time">13分で読める</span> • <span class="tag">開発</span> <span class="tag">カスタム</span></p>
+                    <p class="post-excerpt">独自のClaude Code Actionsを作成する方法について、実例を交えながら説明します。</p>
+                </div>
+            </article>
+
+            <article class="post-preview card">
+                <div class="card-content">
+                    <h2><a href="posts/actions-best-practices.html">Claude Code Actions活用のベストプラクティス</a></h2>
+                    <p class="post-meta">2025年1月4日 • <span class="reading-time">11分で読める</span> • <span class="tag tag-advanced">ベストプラクティス</span> <span class="tag">効率化</span></p>
+                    <p class="post-excerpt">効率的なワークフローを構築するためのClaude Code Actionsの活用法をご紹介します。</p>
+                </div>
             </article>
         </section>
     </main>
@@ -105,6 +150,17 @@
         },
         "inLanguage": "ja",
         "blogPost": [
+            {
+                "@type": "BlogPosting",
+                "headline": "CI/CDパイプラインをClaude Code Actionsで効率化する方法",
+                "description": "GitHub Actions、GitLab CI/CD、Jenkins等の主要CI/CDツールとClaude Code Actionsを連携させる実践的な方法を解説。",
+                "url": "https://dev-kawahara-r.github.io/posts/cicd-pipeline-integration.html",
+                "datePublished": "2025-01-08",
+                "author": {
+                    "@type": "Organization",
+                    "name": "Claude Code Actions Blog"
+                }
+            },
             {
                 "@type": "BlogPosting",
                 "headline": "プロジェクト別Claude Code Actions設定例集",
@@ -174,5 +230,8 @@
         ]
     }
     </script>
+    
+    <!-- JavaScript -->
+    <script src="app.js"></script>
 </body>
 </html>

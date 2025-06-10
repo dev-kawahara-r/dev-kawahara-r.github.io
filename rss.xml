@@ -6,9 +6,17 @@
         <link>https://dev-kawahara-r.github.io/</link>
         <atom:link href="https://dev-kawahara-r.github.io/rss.xml" rel="self" type="application/rss+xml" />
         <language>ja</language>
-        <lastBuildDate>Tue, 07 Jan 2025 15:00:00 +0900</lastBuildDate>
-        <pubDate>Tue, 07 Jan 2025 15:00:00 +0900</pubDate>
+        <lastBuildDate>Wed, 08 Jan 2025 10:00:00 +0900</lastBuildDate>
+        <pubDate>Wed, 08 Jan 2025 10:00:00 +0900</pubDate>
         <ttl>1440</ttl>
+        
+        <item>
+            <title>CI/CDパイプラインをClaude Code Actionsで効率化する方法</title>
+            <description>GitHub Actions、GitLab CI/CD、Jenkins等の主要CI/CDツールとClaude Code Actionsを連携させる実践的な方法を解説。自動テスト、ビルド、デプロイパイプラインの構築から、クラウドプロバイダー統合まで詳しく紹介します。</description>
+            <link>https://dev-kawahara-r.github.io/posts/cicd-pipeline-integration.html</link>
+            <guid>https://dev-kawahara-r.github.io/posts/cicd-pipeline-integration.html</guid>
+            <pubDate>Wed, 08 Jan 2025 10:00:00 +0900</pubDate>
+        </item>
         
         <item>
             <title>プロジェクト別Claude Code Actions設定例集</title>
