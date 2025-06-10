@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code Actions よくあるエラーと解決法 - Claude Code Actions Blog</title>
+    <meta name="description" content="Claude Code Actionsでよく発生するエラーの原因と解決方法を詳しく解説。実際のエラーメッセージと具体的な対処法、トラブルシューティングのコツまで実践的なガイドを提供します。">
+    <meta name="keywords" content="Claude Code, Actions, エラー, 解決法, トラブルシューティング, デバッグ, 問題解決, 設定エラー">
+    <link rel="canonical" href="https://dev-kawahara-r.github.io/posts/common-errors-solutions.html">
+    <meta property="og:title" content="Claude Code Actions よくあるエラーと解決法">
+    <meta property="og:description" content="Claude Code Actionsでよく発生するエラーの原因と解決方法を詳しく解説。">
+    <meta property="og:url" content="https://dev-kawahara-r.github.io/posts/common-errors-solutions.html">
+    <meta property="og:type" content="article">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../post.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1><a href="../index.html">Claude Code Actions Blog</a></h1>
+            <p>Claude Codeのアクション機能について詳しく解説</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <article class="blog-post">
+            <header class="post-header">
+                <h1>Claude Code Actions よくあるエラーと解決法</h1>
+                <p class="post-meta">2025年1月7日</p>
+            </header>
+
+            <div class="post-content">
+                <p>Claude Code Actionsを使用していると、様々なエラーに遭遇することがあります。本記事では、よく発生するエラーとその解決方法を実際のエラーメッセージと共に詳しく解説します。</p>
+
+                <h2>🚨 設定ファイル関連のエラー</h2>
+
+                <h3>1. JSON構文エラー</h3>
+                <p><strong>エラーメッセージ:</strong></p>
+                <pre><code>Error: Invalid JSON syntax in claude-actions.json at line 15
+SyntaxError: Unexpected token '}' in JSON at position 234</code></pre>
+
+                <p><strong>原因:</strong></p>
+                <ul>
+                    <li>JSONファイルの構文が間違っている</li>
+                    <li>カンマの不足または余分なカンマ</li>
+                    <li>クォートの閉じ忘れ</li>
+                </ul>
+
+                <p><strong>解決方法:</strong></p>
+                <pre><code>// ❌ 間違った例（最後にカンマが余分）
+{
+  "name": "test-action",
+  "command": "npm test",
+}
+
+// ✅ 正しい例
+{
+  "name": "test-action",
+  "command": "npm test"
+}</code></pre>
+
+                <p><strong>デバッグのコツ:</strong></p>
+                <ul>
+                    <li>JSONリンターを使用してファイルを検証</li>
+                    <li>VS Codeなどのエディタで構文ハイライトを活用</li>
+                    <li>オンラインJSONバリデーターでチェック</li>
+                </ul>
+
+                <h3>2. 必須フィールドの不足</h3>
+                <p><strong>エラーメッセージ:</strong></p>
+                <pre><code>Error: Missing required field 'name' in action definition
+Validation failed: 'command' is required for action type 'command'</code></pre>
+
+                <p><strong>解決方法:</strong></p>
+                <pre><code>// ✅ 必須フィールドを含む正しい設定
+{
+  "actions": [
+    {
+      "name": "lint-code",           // 必須
+      "description": "コードをリント", // 推奨
+      "type": "command",             // 必須
+      "command": "npm run lint"      // type=commandの場合必須
+    }
+  ]
+}</code></pre>
+
+                <h2>🔧 実行時エラー</h2>
+
+                <h3>3. コマンド実行エラー</h3>
+                <p><strong>エラーメッセージ:</strong></p>
+                <pre><code>Error: Command 'npm run build' failed with exit code 1
+Error: Command not found: 'yarn'</code></pre>
+
+                <p><strong>原因と解決方法:</strong></p>
+
+                <h4>コマンドが存在しない場合</h4>
+                <pre><code>// 対策1: パッケージマネージャーの確認
+{
+  "name": "install-deps",
+  "conditions": [
+    {
+      "exists": "package-lock.json",
+      "command": "npm install"
+    },
+    {
+      "exists": "yarn.lock", 
+      "command": "yarn install"
+    },
+    {
+      "default": true,
+      "command": "npm install"
+    }
+  ]
+}</code></pre>
+
+                <h4>スクリプトが定義されていない場合</h4>
+                <pre><code>// package.jsonにスクリプトを追加
+{
+  "scripts": {
+    "lint": "eslint .",
+    "test": "jest",
+    "build": "webpack --mode=production"
+  }
+}</code></pre>
+
+                <h3>4. 権限エラー</h3>
+                <p><strong>エラーメッセージ:</strong></p>
+                <pre><code>Error: Permission denied: Cannot write to '/usr/local/bin'
+EACCES: permission denied, open '/etc/hosts'</code></pre>
+
+                <p><strong>解決方法:</strong></p>
+                <pre><code>{
+  "name": "safe-install",
+  "command": "npm install --user",  // ユーザー権限で実行
+  "working_directory": "~/projects", // 書き込み可能なディレクトリ
+  "permissions": {
+    "required": ["read", "write"],
+    "scope": "project"  // プロジェクト内に限定
+  }
+}</code></pre>
+
+                <h2>🌐 ネットワーク・環境エラー</h2>
+
+                <h3>5. 環境変数の未設定</h3>
+                <p><strong>エラーメッセージ:</strong></p>
+                <pre><code>Error: Environment variable 'API_KEY' is not defined
+TypeError: Cannot read property 'GITHUB_TOKEN' of undefined</code></pre>
+
+                <p><strong>解決方法:</strong></p>
+                <pre><code>// .env ファイルの設定
+API_KEY=your_api_key_here
+GITHUB_TOKEN=ghp_your_token_here
+
+// アクション定義での環境変数チェック
+{
+  "name": "deploy",
+  "pre_checks": [
+    {
+      "type": "env_var",
+      "name": "API_KEY",
+      "required": true,
+      "error_message": "API_KEYが設定されていません"
+    }
+  ],
+  "command": "npm run deploy"
+}</code></pre>
+
+                <h3>6. ネットワーク接続エラー</h3>
+                <p><strong>エラーメッセージ:</strong></p>
+                <pre><code>Error: ENOTFOUND registry.npmjs.org
+Error: Request timeout after 30000ms</code></pre>
+
+                <p><strong>解決方法:</strong></p>
+                <pre><code>{
+  "name": "resilient-install",
+  "retry": {
+    "attempts": 3,
+    "delay": 5000,
+    "exponential_backoff": true
+  },
+  "timeout": 300000,  // 5分のタイムアウト
+  "command": "npm install",
+  "fallback": {
+    "command": "npm install --registry=https://registry.npm.taobao.org"
+  }
+}</code></pre>
+
+                <h2>📁 ファイル・パス関連エラー</h2>
+
+                <h3>7. ファイルパスエラー</h3>
+                <p><strong>エラーメッセージ:</strong></p>
+                <pre><code>Error: ENOENT: no such file or directory 'config/webpack.config.js'
+Error: Cannot resolve path '../invalid/path'</code></pre>
+
+                <p><strong>解決方法:</strong></p>
+                <pre><code>{
+  "name": "conditional-build",
+  "steps": [
+    {
+      "name": "check-config",
+      "type": "file_check",
+      "files": [
+        "webpack.config.js",
+        "config/webpack.config.js",
+        "build/webpack.config.js"
+      ],
+      "action": "find_first"
+    },
+    {
+      "name": "build",
+      "command": "webpack --config ${FOUND_CONFIG}",
+      "depends_on": ["check-config"]
+    }
+  ]
+}</code></pre>
+
+                <h3>8. 作業ディレクトリの問題</h3>
+                <p><strong>エラーメッセージ:</strong></p>
+                <pre><code>Error: spawn ENOENT (command not found in current directory)</code></pre>
+
+                <p><strong>解決方法:</strong></p>
+                <pre><code>{
+  "name": "proper-directory",
+  "working_directory": "${PROJECT_ROOT}",
+  "pre_steps": [
+    {
+      "name": "verify-directory",
+      "command": "test -f package.json",
+      "error_message": "package.jsonが見つかりません。正しいディレクトリにいることを確認してください。"
+    }
+  ],
+  "command": "npm run build"
+}</code></pre>
+
+                <h2>🔄 依存関係・競合エラー</h2>
+
+                <h3>9. アクション間の依存関係エラー</h3>
+                <p><strong>エラーメッセージ:</strong></p>
+                <pre><code>Error: Circular dependency detected: build → test → build
+Error: Dependency 'lint' not found for action 'build'</code></pre>
+
+                <p><strong>解決方法:</strong></p>
+                <pre><code>{
+  "actions": [
+    {
+      "name": "lint",
+      "command": "npm run lint"
+    },
+    {
+      "name": "test", 
+      "command": "npm run test",
+      "depends_on": ["lint"]  // 正しい依存関係
+    },
+    {
+      "name": "build",
+      "command": "npm run build",
+      "depends_on": ["test"]  // 循環依存を避ける
+    }
+  ]
+}</code></pre>
+
+                <h3>10. 並列実行での競合</h3>
+                <p><strong>エラーメッセージ:</strong></p>
+                <pre><code>Error: Resource lock conflict: Multiple actions accessing same file
+Error: Port 3000 is already in use</code></pre>
+
+                <p><strong>解決方法:</strong></p>
+                <pre><code>{
+  "name": "safe-parallel",
+  "parallel": [
+    {
+      "name": "lint",
+      "command": "npm run lint",
+      "locks": ["package-lock.json"]
+    },
+    {
+      "name": "test",
+      "command": "npm run test -- --port=3001",
+      "locks": ["test-results/"]
+    }
+  ],
+  "max_concurrent": 2
+}</code></pre>
+
+                <h2>🛠️ トラブルシューティングのベストプラクティス</h2>
+
+                <h3>デバッグモードの活用</h3>
+                <pre><code># 詳細ログでの実行
+claude-code actions run my-action --debug --verbose
+
+# ドライランモードでの検証
+claude-code actions run my-action --dry-run
+
+# ステップバイステップ実行
+claude-code actions run my-action --step-by-step</code></pre>
+
+                <h3>ログ管理とモニタリング</h3>
+                <pre><code>{
+  "name": "monitored-action",
+  "command": "npm run build",
+  "logging": {
+    "level": "debug",
+    "file": "logs/build-${timestamp}.log",
+    "rotate": true
+  },
+  "monitoring": {
+    "metrics": ["execution_time", "memory_usage"],
+    "alerts": {
+      "execution_time_threshold": "5m",
+      "failure_threshold": 3
+    }
+  }
+}</code></pre>
+
+                <h3>予防的なエラーハンドリング</h3>
+                <pre><code>{
+  "name": "robust-action",
+  "pre_checks": [
+    {"type": "disk_space", "minimum": "1GB"},
+    {"type": "network", "test_url": "https://registry.npmjs.org"},
+    {"type": "dependencies", "commands": ["node", "npm"]}
+  ],
+  "command": "npm run build",
+  "on_error": {
+    "cleanup": ["rm -rf node_modules/.cache"],
+    "retry": {"attempts": 2, "delay": 10000},
+    "notifications": ["team-slack-channel"]
+  },
+  "timeout": 600000
+}</code></pre>
+
+                <h2>📞 ヘルプリソース</h2>
+
+                <h3>コミュニティサポート</h3>
+                <ul>
+                    <li>GitHub Issues: バグ報告と機能要望</li>
+                    <li>Discord/Slack: リアルタイムサポート</li>
+                    <li>Stack Overflow: 技術的な質問</li>
+                </ul>
+
+                <h3>公式ドキュメント</h3>
+                <ul>
+                    <li>エラーコード一覧</li>
+                    <li>APIリファレンス</li>
+                    <li>設定例集</li>
+                </ul>
+
+                <h2>まとめ</h2>
+                <p>エラーが発生した際は、まずエラーメッセージを注意深く読み、本記事の解決法を参考に対処してください。予防的なエラーハンドリングを実装することで、より安定したワークフローを構築できます。</p>
+
+                <p>問題が解決しない場合は、デバッグモードでの詳細ログを確認し、必要に応じてコミュニティサポートを活用することをお勧めします。</p>
+            </div>
+        </article>
+
+        <nav class="post-navigation">
+            <a href="daily-automation-tasks.html">← 前の記事: 日常業務10選</a>
+            <a href="../index.html">ブログ一覧に戻る →</a>
+        </nav>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Claude Code Actions Blog. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

@@ -6,9 +6,17 @@
         <link>https://dev-kawahara-r.github.io/</link>
         <atom:link href="https://dev-kawahara-r.github.io/rss.xml" rel="self" type="application/rss+xml" />
         <language>ja</language>
-        <lastBuildDate>Mon, 06 Jan 2025 12:00:00 +0900</lastBuildDate>
-        <pubDate>Mon, 06 Jan 2025 12:00:00 +0900</pubDate>
+        <lastBuildDate>Tue, 07 Jan 2025 10:00:00 +0900</lastBuildDate>
+        <pubDate>Tue, 07 Jan 2025 10:00:00 +0900</pubDate>
         <ttl>1440</ttl>
+        
+        <item>
+            <title>Claude Code Actions よくあるエラーと解決法</title>
+            <description>Claude Code Actionsでよく発生するエラーの原因と解決方法を詳しく解説。JSON構文エラー、コマンド実行エラー、環境変数の未設定など、実際のエラーメッセージと具体的な対処法、トラブルシューティングのコツまで実践的なガイドを提供します。</description>
+            <link>https://dev-kawahara-r.github.io/posts/common-errors-solutions.html</link>
+            <guid>https://dev-kawahara-r.github.io/posts/common-errors-solutions.html</guid>
+            <pubDate>Tue, 07 Jan 2025 10:00:00 +0900</pubDate>
+        </item>
         
         <item>
             <title>Claude Code Actionsで自動化できる日常業務10選</title>
