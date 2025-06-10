@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://dev-kawahara-r.github.io/sitemap.xml
+
+# 検索エンジン最適化
+Crawl-delay: 1

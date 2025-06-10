@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Claude Code Actions Blog</title>
+        <description>Claude Code Actionsの使い方、カスタムアクション開発、ベストプラクティスを詳しく解説</description>
+        <link>https://dev-kawahara-r.github.io/</link>
+        <atom:link href="https://dev-kawahara-r.github.io/rss.xml" rel="self" type="application/rss+xml" />
+        <language>ja</language>
+        <lastBuildDate>Mon, 06 Jan 2025 00:00:00 +0900</lastBuildDate>
+        <pubDate>Mon, 06 Jan 2025 00:00:00 +0900</pubDate>
+        <ttl>1440</ttl>
+        
+        <item>
+            <title>Claude Code Actionsとは？基本的な使い方を解説</title>
+            <description>Claude Code Actionsの基本的な概念から実際の使用方法まで詳しく解説します。開発者がClaude Codeに対してカスタムコマンドを定義し、特定のタスクを自動化できる機能について学びましょう。</description>
+            <link>https://dev-kawahara-r.github.io/posts/introduction-to-claude-code-actions.html</link>
+            <guid>https://dev-kawahara-r.github.io/posts/introduction-to-claude-code-actions.html</guid>
+            <pubDate>Mon, 06 Jan 2025 00:00:00 +0900</pubDate>
+        </item>
+        
+        <item>
+            <title>カスタムアクションの開発方法</title>
+            <description>独自のClaude Code Actionsを作成する方法について、実例を交えながら説明します。開発環境の準備から実際のアクション実装まで、ステップバイステップで解説します。</description>
+            <link>https://dev-kawahara-r.github.io/posts/custom-actions-development.html</link>
+            <guid>https://dev-kawahara-r.github.io/posts/custom-actions-development.html</guid>
+            <pubDate>Sun, 05 Jan 2025 00:00:00 +0900</pubDate>
+        </item>
+        
+        <item>
+            <title>Claude Code Actions活用のベストプラクティス</title>
+            <description>効率的なワークフローを構築するためのClaude Code Actionsの活用法をご紹介します。パフォーマンス最適化、セキュリティ考慮事項、チーム開発での活用方法まで幅広くカバーします。</description>
+            <link>https://dev-kawahara-r.github.io/posts/actions-best-practices.html</link>
+            <guid>https://dev-kawahara-r.github.io/posts/actions-best-practices.html</guid>
+            <pubDate>Sat, 04 Jan 2025 00:00:00 +0900</pubDate>
+        </item>
+    </channel>
+</rss>
