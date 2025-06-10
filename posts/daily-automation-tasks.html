@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code Actionsで自動化できる日常業務10選 - Claude Code Actions Blog</title>
+    <meta name="description" content="開発者の日常業務をClaude Code Actionsで効率化！コード生成からデプロイまで、すぐに実践できる自動化レシピを10個紹介。業務時間を大幅に短縮する具体的な設定例と実装方法を詳しく解説します。">
+    <meta name="keywords" content="Claude Code, Actions, 自動化, 日常業務, 効率化, 開発ワークフロー, コード生成, テスト, デプロイ">
+    <link rel="canonical" href="https://dev-kawahara-r.github.io/posts/daily-automation-tasks.html">
+    <meta property="og:title" content="Claude Code Actionsで自動化できる日常業務10選">
+    <meta property="og:description" content="開発者の日常業務をClaude Code Actionsで効率化！具体的な自動化レシピを10個紹介。">
+    <meta property="og:url" content="https://dev-kawahara-r.github.io/posts/daily-automation-tasks.html">
+    <meta property="og:type" content="article">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../post.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1><a href="../index.html">Claude Code Actions Blog</a></h1>
+            <p>Claude Codeのアクション機能について詳しく解説</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <article class="blog-post">
+            <header class="post-header">
+                <h1>Claude Code Actionsで自動化できる日常業務10選</h1>
+                <p class="post-meta">2025年1月6日</p>
+            </header>
+
+            <div class="post-content">
+                <p>開発者の日常業務には、同じような作業を繰り返すことが多くあります。Claude Code Actionsを活用すれば、これらの業務を大幅に自動化できます。今回は、すぐに実践できる自動化レシピを10個ご紹介します。</p>
+
+                <h2>1. コードフォーマットの自動実行</h2>
+                <p>保存時やコミット前に自動的にコードをフォーマットします。</p>
+                <pre><code>{
+  "name": "auto-format",
+  "description": "コードを自動フォーマット",
+  "trigger": "on-save",
+  "steps": [
+    {
+      "name": "prettier",
+      "command": "prettier --write .",
+      "include": ["**/*.{js,ts,jsx,tsx,css,html}"]
+    },
+    {
+      "name": "eslint-fix", 
+      "command": "eslint --fix .",
+      "include": ["**/*.{js,ts,jsx,tsx}"]
+    }
+  ]
+}</code></pre>
+
+                <h2>2. テストの自動実行</h2>
+                <p>変更されたファイルに関連するテストのみを実行して、効率的にテストできます。</p>
+                <pre><code>{
+  "name": "smart-test",
+  "description": "変更ファイルに関連するテストを実行",
+  "trigger": "on-change",
+  "command": "npm test -- --findRelatedTests ${CHANGED_FILES}",
+  "conditions": {
+    "file_patterns": ["**/*.{js,ts,jsx,tsx}"]
+  }
+}</code></pre>
+
+                <h2>3. 新しいコンポーネントの自動生成</h2>
+                <p>React/Vueコンポーネントのボイラープレートを自動生成します。</p>
+                <pre><code>{
+  "name": "generate-component",
+  "description": "新しいReactコンポーネントを生成",
+  "type": "template",
+  "parameters": {
+    "name": {
+      "type": "string",
+      "prompt": "コンポーネント名を入力してください"
+    }
+  },
+  "template": {
+    "src/components/${name}/${name}.tsx": "component-template.tsx",
+    "src/components/${name}/${name}.test.tsx": "component-test-template.tsx",
+    "src/components/${name}/index.ts": "component-index-template.ts"
+  }
+}</code></pre>
+
+                <h2>4. 依存関係の自動更新チェック</h2>
+                <p>outdatedなパッケージを定期的にチェックし、アップデート可能な依存関係を通知します。</p>
+                <pre><code>{
+  "name": "dependency-check",
+  "description": "依存関係の更新チェック",
+  "schedule": "weekly",
+  "steps": [
+    {
+      "name": "check-outdated",
+      "command": "npm outdated --json > outdated.json"
+    },
+    {
+      "name": "notify-updates",
+      "script": "scripts/notify-outdated.js",
+      "notifications": {
+        "slack": "#dev-team"
+      }
+    }
+  ]
+}</code></pre>
+
+                <h2>5. ドキュメントの自動生成</h2>
+                <p>JSDocコメントからAPIドキュメントを自動生成します。</p>
+                <pre><code>{
+  "name": "generate-docs",
+  "description": "APIドキュメントを自動生成",
+  "trigger": "pre-commit",
+  "steps": [
+    {
+      "name": "jsdoc",
+      "command": "jsdoc -c jsdoc.config.json"
+    },
+    {
+      "name": "typedoc",
+      "command": "typedoc --out docs src/",
+      "condition": "typescript"
+    }
+  ],
+  "outputs": ["docs/"]
+}</code></pre>
+
+                <h2>6. 環境別デプロイの自動化</h2>
+                <p>ブランチに応じて適切な環境に自動デプロイします。</p>
+                <pre><code>{
+  "name": "auto-deploy",
+  "description": "ブランチ別自動デプロイ",
+  "trigger": "on-push",
+  "conditions": [
+    {
+      "branch": "develop",
+      "environment": "staging",
+      "command": "npm run deploy:staging"
+    },
+    {
+      "branch": "main",
+      "environment": "production", 
+      "command": "npm run deploy:production",
+      "approval_required": true
+    }
+  ]
+}</code></pre>
+
+                <h2>7. 設定ファイルの自動同期</h2>
+                <p>プロジェクト間で共通の設定ファイルを同期します。</p>
+                <pre><code>{
+  "name": "sync-configs",
+  "description": "設定ファイルの同期",
+  "schedule": "daily",
+  "source": "https://github.com/company/shared-configs",
+  "files": [
+    ".eslintrc.json",
+    ".prettierrc", 
+    "tsconfig.json",
+    ".gitignore"
+  ],
+  "merge_strategy": "preserve_local"
+}</code></pre>
+
+                <h2>8. セキュリティ脆弱性の自動チェック</h2>
+                <p>依存関係の脆弱性チェックを定期実行します。</p>
+                <pre><code>{
+  "name": "security-audit",
+  "description": "セキュリティ脆弱性チェック",
+  "schedule": "daily",
+  "steps": [
+    {
+      "name": "npm-audit",
+      "command": "npm audit --audit-level=moderate"
+    },
+    {
+      "name": "snyk-test",
+      "command": "snyk test",
+      "optional": true
+    }
+  ],
+  "on_failure": {
+    "notify": ["security-team@company.com"],
+    "create_issue": true
+  }
+}</code></pre>
+
+                <h2>9. パフォーマンス測定の自動化</h2>
+                <p>ビルド時にパフォーマンス指標を自動測定します。</p>
+                <pre><code>{
+  "name": "performance-check",
+  "description": "パフォーマンス自動測定",
+  "trigger": "post-build",
+  "steps": [
+    {
+      "name": "bundle-analyzer",
+      "command": "npm run analyze",
+      "output": "bundle-report.html"
+    },
+    {
+      "name": "lighthouse-ci",
+      "command": "lhci autorun",
+      "config": "lighthouserc.js"
+    }
+  ],
+  "thresholds": {
+    "bundle_size": "500KB",
+    "performance_score": 90
+  }
+}</code></pre>
+
+                <h2>10. チームタスクの自動化</h2>
+                <p>プルリクエスト作成時の自動チェックとレビュー依頼を設定します。</p>
+                <pre><code>{
+  "name": "pr-automation",
+  "description": "プルリクエスト自動化",
+  "trigger": "pull_request",
+  "steps": [
+    {
+      "name": "run-checks",
+      "parallel": [
+        {"command": "npm run lint"},
+        {"command": "npm run test"},
+        {"command": "npm run type-check"}
+      ]
+    },
+    {
+      "name": "assign-reviewers",
+      "script": "scripts/auto-assign-reviewers.js",
+      "based_on": "file_changes"
+    },
+    {
+      "name": "add-labels",
+      "labels": ["needs-review", "auto-generated"]
+    }
+  ]
+}</code></pre>
+
+                <h2>実装のポイント</h2>
+                
+                <h3>段階的な導入</h3>
+                <ul>
+                    <li>まずは1-2個のシンプルなアクションから始める</li>
+                    <li>チーム全体で効果を確認してから段階的に拡張</li>
+                    <li>失敗時の影響が少ないものから導入</li>
+                </ul>
+
+                <h3>モニタリングと改善</h3>
+                <ul>
+                    <li>実行ログを定期的に確認</li>
+                    <li>実行時間やエラー率を監視</li>
+                    <li>チームメンバーからのフィードバックを収集</li>
+                </ul>
+
+                <h3>セキュリティ考慮事項</h3>
+                <ul>
+                    <li>機密情報を環境変数で管理</li>
+                    <li>実行権限を適切に制限</li>
+                    <li>外部サービス連携時の認証情報保護</li>
+                </ul>
+
+                <h2>まとめ</h2>
+                <p>これらの自動化を導入することで、開発者はより創造的な作業に集中できるようになります。まずは自分のプロジェクトで最も時間のかかっている作業を特定し、その作業から自動化を始めてみてください。</p>
+
+                <p>次回は、プロジェクト別の具体的な設定例を詳しく解説する予定です。お楽しみに！</p>
+            </div>
+        </article>
+
+        <nav class="post-navigation">
+            <a href="actions-best-practices.html">← 前の記事: ベストプラクティス</a>
+            <a href="../index.html">ブログ一覧に戻る →</a>
+        </nav>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Claude Code Actions Blog. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

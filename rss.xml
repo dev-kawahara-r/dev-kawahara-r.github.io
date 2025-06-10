@@ -6,9 +6,17 @@
         <link>https://dev-kawahara-r.github.io/</link>
         <atom:link href="https://dev-kawahara-r.github.io/rss.xml" rel="self" type="application/rss+xml" />
         <language>ja</language>
-        <lastBuildDate>Mon, 06 Jan 2025 00:00:00 +0900</lastBuildDate>
-        <pubDate>Mon, 06 Jan 2025 00:00:00 +0900</pubDate>
+        <lastBuildDate>Mon, 06 Jan 2025 12:00:00 +0900</lastBuildDate>
+        <pubDate>Mon, 06 Jan 2025 12:00:00 +0900</pubDate>
         <ttl>1440</ttl>
+        
+        <item>
+            <title>Claude Code Actionsで自動化できる日常業務10選</title>
+            <description>開発者の日常業務をClaude Code Actionsで効率化！コード生成からデプロイまで、すぐに実践できる自動化レシピを10個紹介。業務時間を大幅に短縮する具体的な設定例と実装方法を詳しく解説します。</description>
+            <link>https://dev-kawahara-r.github.io/posts/daily-automation-tasks.html</link>
+            <guid>https://dev-kawahara-r.github.io/posts/daily-automation-tasks.html</guid>
+            <pubDate>Mon, 06 Jan 2025 12:00:00 +0900</pubDate>
+        </item>
         
         <item>
             <title>Claude Code Actionsとは？基本的な使い方を解説</title>
