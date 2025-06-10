@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code Actionsとは？基本的な使い方を解説 - Claude Code Actions Blog</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../post.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1><a href="../index.html">Claude Code Actions Blog</a></h1>
+            <p>Claude Codeのアクション機能について詳しく解説</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <article class="blog-post">
+            <header class="post-header">
+                <h1>Claude Code Actionsとは？基本的な使い方を解説</h1>
+                <p class="post-meta">2025年1月6日</p>
+            </header>
+
+            <div class="post-content">
+                <h2>Claude Code Actionsの概要</h2>
+                <p>Claude Code Actionsは、開発者がClaude Codeに対してカスタムコマンドを定義し、特定のタスクを自動化できる機能です。この機能により、繰り返し行う作業を効率化し、開発ワークフローを大幅に改善することができます。</p>
+
+                <h2>基本的な仕組み</h2>
+                <p>Claude Code Actionsは以下の要素で構成されています：</p>
+                <ul>
+                    <li><strong>アクション定義</strong>: 実行したいタスクの内容を記述</li>
+                    <li><strong>トリガー</strong>: アクションを実行するきっかけ</li>
+                    <li><strong>パラメータ</strong>: アクションに渡す変数や設定</li>
+                    <li><strong>実行環境</strong>: アクションが動作するコンテキスト</li>
+                </ul>
+
+                <h2>実際の使用例</h2>
+                <h3>1. コードフォーマッティング</h3>
+                <pre><code>{
+  "name": "format-code",
+  "description": "コードを自動的にフォーマットする",
+  "command": "prettier --write .",
+  "trigger": "on-save"
+}</code></pre>
+
+                <h3>2. テスト実行</h3>
+                <pre><code>{
+  "name": "run-tests",
+  "description": "全てのテストを実行する",
+  "command": "npm test",
+  "trigger": "manual"
+}</code></pre>
+
+                <h2>導入のメリット</h2>
+                <ul>
+                    <li>開発作業の自動化</li>
+                    <li>人的ミスの削減</li>
+                    <li>一貫性のあるワークフロー</li>
+                    <li>時間の節約</li>
+                </ul>
+
+                <h2>次のステップ</h2>
+                <p>基本的な概念を理解したら、実際にカスタムアクションを作成してみましょう。<a href="custom-actions-development.html">カスタムアクションの開発方法</a>で詳しく解説しています。</p>
+            </div>
+        </article>
+
+        <nav class="post-navigation">
+            <a href="../index.html">← ブログ一覧に戻る</a>
+            <a href="custom-actions-development.html">次の記事: カスタムアクション開発 →</a>
+        </nav>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Claude Code Actions Blog. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

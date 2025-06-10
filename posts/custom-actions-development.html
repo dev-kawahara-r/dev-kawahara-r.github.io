@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>カスタムアクションの開発方法 - Claude Code Actions Blog</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../post.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1><a href="../index.html">Claude Code Actions Blog</a></h1>
+            <p>Claude Codeのアクション機能について詳しく解説</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <article class="blog-post">
+            <header class="post-header">
+                <h1>カスタムアクションの開発方法</h1>
+                <p class="post-meta">2025年1月5日</p>
+            </header>
+
+            <div class="post-content">
+                <h2>開発環境の準備</h2>
+                <p>カスタムアクションを開発するには、まず適切な開発環境を整える必要があります。</p>
+
+                <h3>必要なツール</h3>
+                <ul>
+                    <li>Claude Code CLI</li>
+                    <li>Node.js (v18以上推奨)</li>
+                    <li>テキストエディター（VS Code推奨）</li>
+                    <li>Git</li>
+                </ul>
+
+                <h2>アクション設定ファイルの作成</h2>
+                <p>カスタムアクションは設定ファイル（<code>claude-actions.json</code>）に定義します。</p>
+
+                <pre><code>{
+  "actions": [
+    {
+      "name": "deploy-staging",
+      "description": "ステージング環境にデプロイ",
+      "type": "command",
+      "command": "npm run deploy:staging",
+      "parameters": {
+        "branch": {
+          "type": "string",
+          "default": "develop",
+          "description": "デプロイするブランチ"
+        }
+      },
+      "confirm": true
+    }
+  ]
+}</code></pre>
+
+                <h2>高度なアクション例</h2>
+                <h3>条件付き実行</h3>
+                <pre><code>{
+  "name": "conditional-test",
+  "description": "変更されたファイルに応じてテストを実行",
+  "type": "script",
+  "script": "scripts/conditional-test.js",
+  "conditions": [
+    {
+      "pattern": "**/*.ts",
+      "command": "npm run test:unit"
+    },
+    {
+      "pattern": "**/*.e2e.ts",
+      "command": "npm run test:e2e"
+    }
+  ]
+}</code></pre>
+
+                <h3>複数ステップの実行</h3>
+                <pre><code>{
+  "name": "full-ci",
+  "description": "完全なCI/CDパイプライン",
+  "type": "pipeline",
+  "steps": [
+    {
+      "name": "lint",
+      "command": "npm run lint"
+    },
+    {
+      "name": "test",
+      "command": "npm run test",
+      "parallel": true
+    },
+    {
+      "name": "build",
+      "command": "npm run build",
+      "depends_on": ["lint", "test"]
+    },
+    {
+      "name": "deploy",
+      "command": "npm run deploy",
+      "depends_on": ["build"],
+      "manual": true
+    }
+  ]
+}</code></pre>
+
+                <h2>テストとデバッグ</h2>
+                <p>アクションを作成したら、以下の方法でテストを行います：</p>
+
+                <h3>ローカルテスト</h3>
+                <pre><code># アクションの構文チェック
+claude-code actions validate
+
+# 特定のアクションをテスト実行
+claude-code actions run deploy-staging --dry-run
+
+# デバッグモードでの実行
+claude-code actions run deploy-staging --debug</code></pre>
+
+                <h2>ベストプラクティス</h2>
+                <ul>
+                    <li><strong>明確な命名</strong>: アクション名は目的が分かりやすいものにする</li>
+                    <li><strong>適切なエラーハンドリング</strong>: 失敗時の処理を定義する</li>
+                    <li><strong>ドキュメント化</strong>: 各アクションの説明を詳しく記載する</li>
+                    <li><strong>パラメータ検証</strong>: 入力値の妥当性をチェックする</li>
+                    <li><strong>テスト可能性</strong>: dry-runモードを活用する</li>
+                </ul>
+
+                <h2>配布とメンテナンス</h2>
+                <p>作成したアクションは以下の方法で配布・管理できます：</p>
+                <ul>
+                    <li>Gitリポジトリでの共有</li>
+                    <li>npm/Registryでの公開</li>
+                    <li>チーム内での標準化</li>
+                </ul>
+            </div>
+        </article>
+
+        <nav class="post-navigation">
+            <a href="introduction-to-claude-code-actions.html">← 前の記事: 基本的な使い方</a>
+            <a href="actions-best-practices.html">次の記事: ベストプラクティス →</a>
+        </nav>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Claude Code Actions Blog. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
